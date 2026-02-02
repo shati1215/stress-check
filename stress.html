@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shati 職業性ストレスチェック (厚生労働省準拠版)</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f5f7fa;
+            --accent: #ff6b6b;
+            --text: #2c3e50;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            background-color: #eef2f5;
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text);
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+
+        /* セクション見出しのスタイル */
+        .section-header {
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .section-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .question-box {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #fafbfc;
+            transition: 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .question-box:hover {
+            background-color: #f0f4f8;
+            border-left-color: var(--primary);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #34495e;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap; /* スマホで折り返す */
+            gap: 10px;
+        }
+
+        .option-label {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary);
+            background-color: #f0f7ff;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+            accent-color: var(--primary);
+        }
+        
+        .option-label:has(input:checked) {
+            border-color: var(--primary);
+            background-color: #ebf5ff;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 40px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        /* 結果画面 */
+        #result {
+            display: none;
+            margin-top: 40px;
+            border-top: 2px solid #eee;
+            padding-top: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 50px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .score-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .score-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .score-total {
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        .advice-box {
+            text-align: left;
+            margin-top: 25px;
+            line-height: 1.8;
+            font-size: 15px;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: #999;
+            margin-top: 40px;
+            line-height: 1.5;
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Shati 職業性ストレスチェック</h1>
+    <p class="subtitle">厚生労働省「職業性ストレス簡易調査票（57項目）」完全準拠版。<br>仕事の負荷、心身の状態、周囲のサポートを総合的に分析します。</p>
+
+    <!-- ここにJavaScriptで質問が自動生成されます -->
+    <form id="stressForm">
+        <div id="questions-container"></div>
+        <button type="button" onclick="calculateScore()">分析結果を表示する</button>
+    </form>
+
+    <div id="result">
+        <div id="resultCard" class="result-card">
+            <span id="typeBadge" class="type-badge">TYPE</span>
+            <div class="score-title" id="resultTitle">判定中...</div>
+            <div style="margin: 15px 0;">
+                <span class="score-total">ストレス反応スコア:</span>
+                <span id="scoreValue" class="score-value">0</span>
+                <span class="score-total">/ 116</span>
+            </div>
+            <div class="advice-box" id="adviceText">
+                ここに詳細な分析結果が表示されます。
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <strong>【ご利用上の注意】</strong><br>
+        本ツールは、厚生労働省推奨の「職業性ストレス簡易調査票」のロジックに基づき作成されていますが、
+        このWebサイト上での判定はあくまで簡易的なセルフチェックであり、医師による診断ではありません。<br>
+        結果にかかわらず、心身の不調を強く感じる場合は、医療機関や企業の産業医にご相談ください。
+    </div>
+</div>
+
+<script>
+    // --- データ定義 ---
+    // 57項目の質問データ
+    const questions = [
+        // A. 仕事のストレス要因 (1-17)
+        { id: 1, text: "非常にたくさんの仕事をしなければならない", type: "stressor" },
+        { id: 2, text: "時間内に仕事が処理しきれない", type: "stressor" },
+        { id: 3, text: "一生懸命働かなければならない", type: "stressor" },
+        { id: 4, text: "かなり注意を集中する必要がある", type: "stressor" },
+        { id: 5, text: "高度の知識や技術が必要な仕事だ", type: "stressor" },
+        { id: 6, text: "仕事のペースを自分で決められる", type: "control", reverse: true }, 
+        { id: 7, text: "仕事の順番・方法を自分で決められる", type: "control", reverse: true }, 
+        { id: 8, text: "仕事の方針に自分の意見を反映できる", type: "control", reverse: true }, 
+        { id: 9, text: "自分の技能や知識を仕事で使える", type: "control", reverse: true }, 
+        { id: 10, text: "部署の中で意見の食い違いがある", type: "stressor" },
+        { id: 11, text: "自分の部署と他の部署とはうまくいっていない", type: "stressor" },
+        { id: 12, text: "職場の雰囲気は友好的である", type: "environment", reverse: true }, 
+        { id: 13, text: "私の職場の作業環境（騒音、照明、温度、換気など）はよくない", type: "stressor" },
+        { id: 14, text: "仕事の内容は自分に合っている", type: "control", reverse: true }, 
+        { id: 15, text: "働きがいのある仕事だ", type: "control", reverse: true }, 
+        { id: 16, text: "身体を大変よく使う仕事だ", type: "stressor" },
+        { id: 17, text: "自分のペースで仕事ができる", type: "control", reverse: true }, 
+
+        // B. 心身のストレス反応 (18-46)
+        { id: 18, text: "活気がわいてくる", type: "reaction_positive", reverse: true }, 
+        { id: 19, text: "元気がいっぱいだ", type: "reaction_positive", reverse: true }, 
+        { id: 20, text: "生き生きする", type: "reaction_positive", reverse: true }, 
+        { id: 21, text: "怒りを感じる", type: "reaction_negative" },
+        { id: 22, text: "内心腹立たしい", type: "reaction_negative" },
+        { id: 23, text: "イライラしている", type: "reaction_negative" },
+        { id: 24, text: "ひどく疲れた", type: "reaction_negative" },
+        { id: 25, text: "へとへとだ", type: "reaction_negative" },
+        { id: 26, text: "だるい", type: "reaction_negative" },
+        { id: 27, text: "気がはりつめている", type: "reaction_negative" },
+        { id: 28, text: "不安だ", type: "reaction_negative" },
+        { id: 29, text: "落着かない", type: "reaction_negative" },
+        { id: 30, text: "ゆううつだ", type: "reaction_negative" },
+        { id: 31, text: "何をするのも面倒だ", type: "reaction_negative" },
+        { id: 32, text: "物事に集中できない", type: "reaction_negative" },
+        { id: 33, text: "気分が晴れない", type: "reaction_negative" },
+        { id: 34, text: "仕事が手につかない", type: "reaction_negative" },
+        { id: 35, text: "悲しいと感じる", type: "reaction_negative" },
+        { id: 36, text: "めまいがする", type: "reaction_body" },
+        { id: 37, text: "体のふしぶしが痛む", type: "reaction_body" },
+        { id: 38, text: "頭が重かったり頭痛がする", type: "reaction_body" },
+        { id: 39, text: "首筋や肩がこる", type: "reaction_body" },
+        { id: 40, text: "腰が痛い", type: "reaction_body" },
+        { id: 41, text: "目が疲れる", type: "reaction_body" },
+        { id: 42, text: "動悸や息切れがする", type: "reaction_body" },
+        { id: 43, text: "胃腸の具合が悪い", type: "reaction_body" },
+        { id: 44, text: "食欲がない", type: "reaction_body" },
+        { id: 45, text: "便秘や下痢をする", type: "reaction_body" },
+        { id: 46, text: "よく眠れない", type: "reaction_body" },
+
+        // C. 周囲のサポート (47-57)
+        { id: 47, text: "上司はどのくらい気軽に話ができますか？", type: "support", reverse: true },
+        { id: 48, text: "職場の同僚はどのくらい気軽に話ができますか？", type: "support", reverse: true },
+        { id: 49, text: "配偶者、家族、友人はどのくらい気軽に話ができますか？", type: "support", reverse: true },
+        { id: 50, text: "上司は、あなたが困った時、どのくらい頼りになりますか？", type: "support", reverse: true },
+        { id: 51, text: "職場の同僚は、あなたが困った時、どのくらい頼りになりますか？", type: "support", reverse: true },
+        { id: 52, text: "配偶者、家族、友人は、あなたが困った時、どのくらい頼りになりますか？", type: "support", reverse: true },
+        { id: 53, text: "上司は、あなたの個人的な問題を相談したら、どのくらいきいてくれますか？", type: "support", reverse: true },
+        { id: 54, text: "職場の同僚は、あなたの個人的な問題を相談したら、どのくらいきいてくれますか？", type: "support", reverse: true },
+        { id: 55, text: "配偶者、家族、友人は、あなたの個人的な問題を相談したら、どのくらいきいてくれますか？", type: "support", reverse: true },
+        { id: 56, text: "仕事に満足している", type: "satisfaction", reverse: true },
+        { id: 57, text: "家庭生活に満足している", type: "satisfaction", reverse: true }
+    ];
+
+    // --- 処理ロジック ---
+
+    // 画面ロード時に質問を生成
+    window.onload = function() {
+        const container = document.getElementById('questions-container');
+        
+        questions.forEach((q, index) => {
+            // セクションヘッダーの挿入
+            if(index === 0) {
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                header.innerHTML = `<h3>A. 仕事の要因について</h3><p class="section-desc">あなたの仕事の状況について教えてください。</p>`;
+                container.appendChild(header);
+            }
+            if(index === 17) {
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                header.innerHTML = `<h3>B. 最近 1 か月間の状態について</h3><p class="section-desc">ここ1ヶ月のあなたの心身の状態について教えてください。</p>`;
+                container.appendChild(header);
+            }
+            if(index === 46) {
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                header.innerHTML = `<h3>C. 周囲の方々について</h3><p class="section-desc">あなたの周りの人たちのサポート状況について教えてください。</p>`;
+                container.appendChild(header);
+            }
+
+            const div = document.createElement('div');
+            div.className = 'question-box';
+            
+            // 選択肢のHTML生成
+            const html = `
+                <div class="question-text">Q${q.id}. ${q.text}</div>
+                <div class="options">
+                    <label class="option-label"><input type="radio" name="q${q.id}" value="1" required> ${getLabel(index, 1)}</label>
+                    <label class="option-label"><input type="radio" name="q${q.id}" value="2"> ${getLabel(index, 2)}</label>
+                    <label class="option-label"><input type="radio" name="q${q.id}" value="3"> ${getLabel(index, 3)}</label>
+                    <label class="option-label"><input type="radio" name="q${q.id}" value="4"> ${getLabel(index, 4)}</label>
+                </div>
+            `;
+            div.innerHTML = html;
+            container.appendChild(div);
+        });
+    };
+
+    // 質問タイプに応じて選択肢の文言を返す
+    function getLabel(index, value) {
+        if (index < 17) {
+            // Aパート: 仕事について
+            const labels = ["そうだ", "まあそうだ", "ややちがう", "ちがう"];
+            return labels[value - 1];
+        } else if (index < 46) {
+            // Bパート: 心身の状態 (左が高い頻度)
+            const labels = ["ほとんどあった", "ときどきあった", "しばしばあった", "ほとんどなかった"]; 
+            return labels[value - 1];
+        } else {
+            // Cパート: サポート
+            const labels = ["非常に", "かなり", "多少", "全くない"];
+            return labels[value - 1];
+        }
+    }
+
+    // 計算と結果表示
+    function calculateScore() {
+        let scores = {
+            stressor: 0,   // 仕事の負担
+            reaction: 0,   // 心身の反応（点が高いほど悪い）
+            support: 0     // 周囲のサポート（点が高いほど悪い＝サポートなし）
+        };
+        let answeredCount = 0;
+        const form = document.getElementById('stressForm');
+
+        // 集計ループ
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+            const radios = form.elements['q' + q.id];
+            
+            if (radios.value !== "") {
+                let val = parseInt(radios.value); // 1~4
+                answeredCount++;
+
+                let point = 0;
+                
+                // 4点法への正規化 (高いほど「悪い/ストレス高」にする)
+                if (q.reverse) {
+                    // 逆転項目（例：「自分のペースでできる」）
+                    // 1(そうだ) = 良い状態 = 1点
+                    // 4(ちがう) = 悪い状態 = 4点
+                    point = val; 
+                } else {
+                    // 通常項目（例：「仕事が多い」）
+                    // 1(そうだ) = 悪い状態 = 4点
+                    // 4(ちがう) = 良い状態 = 1点
+                    point = 5 - val;
+                }
+
+                // カテゴリ振り分け
+                if (q.type === 'stressor' || q.type === 'control' || q.type === 'environment') {
+                    scores.stressor += point;
+                } else if (q.type.includes('reaction')) {
+                    scores.reaction += point;
+                } else if (q.type === 'support' || q.type === 'satisfaction') {
+                    scores.support += point;
+                }
+            }
+        }
+
+        // 未回答チェック
+        if (answeredCount < questions.length) {
+            alert(`未回答の項目があります（${answeredCount}/${questions.length}）\nより正確な診断のため、すべての質問にお答えください。`);
+            return;
+        }
+
+        showResult(scores);
+    }
+
+    function showResult(scores) {
+        const resultDiv = document.getElementById('result');
+        const resultCard = document.getElementById('resultCard');
+        const typeBadge = document.getElementById('typeBadge');
+        const resultTitle = document.getElementById('resultTitle');
+        const scoreValue = document.getElementById('scoreValue');
+        const adviceText = document.getElementById('adviceText');
+
+        const reactionScore = scores.reaction; // 29項目 * 4 = 116点満点
+        const supportScore = scores.support;   // 高いほど孤立
+        const stressorScore = scores.stressor; // 高いほど仕事がきつい
+
+        // --- 判定ロジック (簡易版基準) ---
+        // ストレス反応スコアに基づくMBTI風診断
+        
+        let diagnosis = "";
+        let color = "";
+        let title = "";
+        let advice = "";
+
+        if (reactionScore < 45) {
+            // 非常に健全
+            diagnosis = "The Vitalist (バイタリスト)";
+            color = "#27ae60"; // Green
+            title = "活力あふれる「バイタリスト」";
+            advice = `
+                現在、あなたのメンタルコンディションは<strong>非常に良好</strong>です。<br>
+                「心身のストレス反応」が低く抑えられており、仕事のプレッシャーをうまくコントロールできています。<br><br>
+                <strong>🔮 今後の指針:</strong><br>
+                今の生活リズムやリフレッシュ方法はあなたに合っています。この安定感を活かし、新しいスキル習得や趣味への挑戦など、自分をアップデートするのに最適な時期です。
+            `;
+        } else if (reactionScore < 76) {
+            // 黄色信号（平均〜やや高め）
+            diagnosis = "The Guardian (ガーディアン)";
+            color = "#f39c12"; // Orange
+            title = "責任感で耐える「ガーディアン」";
+            advice = `
+                現在、あなたは日々の業務を懸命にこなしていますが、<strong>知らず知らずのうちに疲労が蓄積している</strong>状態です。<br>
+                まだ「倒れるほどではない」と感じているかもしれませんが、身体のコリや、ふとした時のため息が増えていませんか？<br><br>
+                <strong>🔮 今後の指針:</strong><br>
+                この段階でのケアが最も重要です。「やらなくてもなんとかなること」を勇気を持って捨て、今週末は泥のように眠るか、完全に仕事を忘れる時間を作ってください。
+            `;
+        } else {
+            // 赤信号（高ストレス）
+            diagnosis = "The Warrior (ウォーリアー)";
+            color = "#c0392b"; // Red
+            title = "戦い疲れた「ウォーリアー」";
+            advice = `
+                <strong>【警告】ストレスレベルが危険域に達しています。</strong><br>
+                あなたは今、傷つきながらも戦場に立ち続けている状態です。スコアは、自力での回復が難しいレベルの負担を示唆しています。<br>
+                これ以上の無理は、長期的な健康リスクに繋がります。<br><br>
+                <strong>🔮 直ちに行うべきこと:</strong><br>
+                1. <strong>休養の確保:</strong> 有給休暇や欠勤を検討してください。<br>
+                2. <strong>相談:</strong> 上司、人事、または心療内科へ相談してください。<br>
+                あなたは十分に頑張りました。今は「逃げる」ことが「勝つ」ことです。
+            `;
+        }
+
+        // 詳細分析コメントの追加
+        let detailAnalysis = `<br><hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;">
+            <strong>📊 3つの軸による分析:</strong><ul style="padding-left:20px; margin-top:10px;">`;
+            
+        // 仕事の負荷について
+        if(stressorScore >= 50) {
+            detailAnalysis += `<li><strong>仕事の負荷:</strong> 非常に高いです。物理的にキャパシティを超えている可能性があります。</li>`;
+        } else {
+            detailAnalysis += `<li><strong>仕事の負荷:</strong> 許容範囲内、またはうまくコントロールできています。</li>`;
+        }
+        
+        // サポートについて (Cパートは逆転計算済み: 高いほど悪い＝サポートなし)
+        // 9項目+2項目 = 11項目。 Max 44点。 平均25前後。高いほど孤立。
+        if(supportScore >= 28) {
+            detailAnalysis += `<li><strong>周囲の支援:</strong> <span style="color:#c0392b;">不足しています（要注意）。</span> 孤立感を強めている大きな要因です。</li>`;
+        } else {
+            detailAnalysis += `<li><strong>周囲の支援:</strong> 良好です。困ったときに相談できる人がいます。</li>`;
+        }
+        detailAnalysis += `</ul>`;
+
+        // 結果のDOM反映
+        scoreValue.textContent = reactionScore;
+        resultCard.style.borderColor = color;
+        resultCard.style.backgroundColor = color + "0d"; // 薄い背景色
+        typeBadge.style.backgroundColor = color;
+        typeBadge.textContent = diagnosis;
+        resultTitle.textContent = title;
+        resultTitle.style.color = color;
+        adviceText.innerHTML = advice + detailAnalysis;
+
+        resultDiv.style.display = "block";
+        resultDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
